@@ -31,6 +31,14 @@ namespace WebApi.Controllers
     }
 
     [AuthorizeRoles(Role.Admin, Role.User)]
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+      var users = _userService.GetAll();
+      return Ok(users);
+    }
+
+    [AuthorizeRoles(Role.Admin, Role.User)]
     [HttpGet("{id}")]
     public IActionResult GetById(string id)
     {

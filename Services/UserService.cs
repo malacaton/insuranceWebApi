@@ -13,7 +13,8 @@ namespace WebApi.Services
 {
   public interface IUserService
   {
-    object Authenticate(string email);
+    UserAuthenticated Authenticate(string email);
+    IEnumerable<UserToList> GetAll();
     User GetById(string id);
     User GetByName(string name);
     User GetUserByPolicy(string id);
@@ -28,7 +29,7 @@ namespace WebApi.Services
       _appSettings = appSettings.Value;
     }
 
-    public object Authenticate(string email)
+    public UserAuthenticated Authenticate(string email)
     {
       var user = Data.Users.SingleOrDefault(x => x.email == email);
 
@@ -50,14 +51,25 @@ namespace WebApi.Services
       var theToken = tokenHandler.CreateToken(tokenDescriptor);
       string token = tokenHandler.WriteToken(theToken);
 
-      return new
+      return new UserAuthenticated
       {
-        user.id,
-        user.name,
-        user.role,
-        token
+        id = user.id,
+        name = user.name,
+        role = user.role,
+        token = token
       };
 
+    }
+
+    public IEnumerable<UserToList> GetAll()
+    {
+      return Data.Users
+        .OrderBy(x => x.name)
+        .Select(x => new UserToList
+        {
+          name = x.name,
+          email = x.email
+        });
     }
 
     public User GetById(string id)
